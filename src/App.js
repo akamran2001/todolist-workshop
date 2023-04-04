@@ -1,27 +1,41 @@
 import './App.css';
+import React, { useState, useEffect } from 'react';
+import TodoList from './TodoList';
+
+function getTodosFromLocalStorage() {
+  const todos = localStorage.getItem('todos');
+  if (todos) {
+    return JSON.parse(todos);
+  }
+  return [];
+}
 
 function App() {
+  const [todos, setTodos] = useState(getTodosFromLocalStorage());
+
+useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));}
+  , [todos]);
+
+  const addTodo = (event) => {
+    event.preventDefault();
+    const newTodo = event.target.elements[0].value;
+    setTodos([...todos, newTodo]);
+    event.target.reset();
+  };
+  const deleteTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src="Octocat.png" className="App-logo" alt="logo" />
-        <p>
-          GitHub Codespaces <span className="heart">♥️</span> React
-        </p>
-        <p className="small">
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </p>
-      </header>
+      <h1>Todo List</h1>
+      <form onSubmit={addTodo}>
+        <input type="text" />
+        <button>Add Todo</button>
+      </form>
+      <TodoList todos={todos} deleteTodo={deleteTodo} />
     </div>
   );
 }
